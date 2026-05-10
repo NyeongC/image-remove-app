@@ -1,3 +1,20 @@
-# image-remove-app
+# Image Remove App
 
-### 이미지 제거 API 서버
+## Architecture
+
+- Vue
+- Spring Boot
+- RabbitMQ
+- Python Worker
+- Nginx
+- OCI
+
+```
+이미지 제거 앱/
+│
+├─ frontend/
+├─ backend/
+├─ worker/
+├─ nginx/
+└─ README.md
+```
