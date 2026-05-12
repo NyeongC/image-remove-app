@@ -1,6 +1,5 @@
 <script setup>
-import { RouterLink, RouterView } from 'vue-router'
-import HelloWorld from './components/HelloWorld.vue'
+import LbTest from './components/LbTest.vue'
 </script>
 
 <template>
@@ -13,6 +12,8 @@ import HelloWorld from './components/HelloWorld.vue'
     </p>
 
     <button>이미지 업로드하기</button>
+
+    <LbTest />
   </div>
 </template>
 
