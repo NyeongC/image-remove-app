@@ -1,0 +1,13 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(curl -s http://localhost:5173)",
+      "Bash(curl -s http://localhost:5173/)",
+      "Bash(curl -si http://localhost:5173/)",
+      "Bash(npm run *)",
+      "Bash(jobs)",
+      "Bash(curl -s --max-time 5 http://localhost:5173/)",
+      "Bash(curl -s --max-time 10 http://localhost:5174/)"
+    ]
+  }
+}
