@@ -1,0 +1,42 @@
+name: Test SSH Connection
+
+on:
+  workflow_dispatch:
+
+jobs:
+  test-ssh:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Test Nginx SSH
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.NGINX_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.NGINX_SSH_KEY }}
+          script: |
+            echo "Nginx SSH OK"
+            hostname
+            whoami
+
+      - name: Test WAS1 SSH
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.WAS1_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.WAS1_SSH_KEY }}
+          script: |
+            echo "WAS1 SSH OK"
+            hostname
+            whoami
+
+      - name: Test WAS2 SSH
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.WAS2_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.WAS2_SSH_KEY }}
+          script: |
+            echo "WAS2 SSH OK"
+            hostname
+            whoami
