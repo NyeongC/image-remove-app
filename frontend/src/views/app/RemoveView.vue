@@ -87,6 +87,22 @@
       </div>
     </div>
 
+    <!-- 에러 화면 -->
+    <div v-else-if="uploadError" class="error-section">
+      <div class="error-card">
+        <div class="error-icon">
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="10"/>
+            <line x1="12" y1="8" x2="12" y2="12"/>
+            <line x1="12" y1="16" x2="12.01" y2="16"/>
+          </svg>
+        </div>
+        <h3>처리 실패</h3>
+        <p>{{ uploadError }}</p>
+        <button class="btn-primary" @click="reset">다시 시도</button>
+      </div>
+    </div>
+
     <!-- 결과 화면 -->
     <div v-else class="result-section">
       <!-- 상단 툴바 -->
@@ -117,18 +133,11 @@
           </div>
         </div>
         <div class="toolbar-right">
-          <button class="btn-secondary">
+          <button class="btn-secondary" @click="downloadResult">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M17 8l-5-5-5 5M12 3v12"/>
             </svg>
             PNG 다운로드
-          </button>
-          <button class="btn-primary">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/>
-              <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/>
-            </svg>
-            공유
           </button>
         </div>
       </div>
@@ -140,10 +149,7 @@
           <div class="image-panel">
             <div class="panel-label">원본</div>
             <div class="image-container original-img">
-              <div class="mock-image" :style="{ background: 'linear-gradient(135deg, #1e1e3f, #2d1b69)' }">
-                <div class="mock-person" style="background: linear-gradient(180deg, #fbbf24, #f59e0b)"></div>
-                <div class="mock-bg"></div>
-              </div>
+              <img :src="originalImageUrl" class="result-image" alt="원본" />
             </div>
           </div>
           <div class="split-divider">
@@ -152,30 +158,23 @@
           </div>
           <div class="image-panel">
             <div class="panel-label">결과</div>
-            <div class="image-container result-img transparent-bg">
-              <div class="mock-image transparent">
-                <div class="mock-person" style="background: linear-gradient(180deg, #fbbf24, #f59e0b)"></div>
-              </div>
+            <div class="image-container transparent-bg">
+              <img :src="resultImageUrl" class="result-image" alt="배경 제거 결과" />
             </div>
           </div>
         </div>
 
         <!-- 결과만 뷰 -->
         <div v-else-if="viewMode === 'result'" class="single-view">
-          <div class="image-container result-img transparent-bg large">
-            <div class="mock-image transparent large">
-              <div class="mock-person" style="background: linear-gradient(180deg, #fbbf24, #f59e0b)"></div>
-            </div>
+          <div class="image-container transparent-bg large">
+            <img :src="resultImageUrl" class="result-image large" alt="배경 제거 결과" />
           </div>
         </div>
 
         <!-- 원본만 뷰 -->
         <div v-else class="single-view">
-          <div class="image-container original-img large">
-            <div class="mock-image large" :style="{ background: 'linear-gradient(135deg, #1e1e3f, #2d1b69)' }">
-              <div class="mock-person" style="background: linear-gradient(180deg, #fbbf24, #f59e0b)"></div>
-              <div class="mock-bg"></div>
-            </div>
+          <div class="image-container large">
+            <img :src="originalImageUrl" class="result-image large" alt="원본" />
           </div>
         </div>
       </div>
@@ -184,17 +183,17 @@
       <div class="image-info-bar">
         <div class="info-item">
           <span class="info-label">원본</span>
-          <span class="info-value">2,400 × 3,200px · 4.2MB</span>
+          <span class="info-value">{{ imageInfo.name }} · {{ imageInfo.originalSize }}</span>
         </div>
         <div class="info-divider"></div>
         <div class="info-item">
           <span class="info-label">결과</span>
-          <span class="info-value">2,400 × 3,200px · PNG · 투명 배경</span>
+          <span class="info-value">PNG · 투명 배경</span>
         </div>
         <div class="info-divider"></div>
         <div class="info-item">
           <span class="info-label">처리 시간</span>
-          <span class="info-value success">0.43초</span>
+          <span class="info-value success">{{ imageInfo.elapsed }}초</span>
         </div>
       </div>
     </div>
@@ -208,8 +207,12 @@ const fileInput = ref(null)
 const isDragging = ref(false)
 const uploadedImage = ref(null)
 const isProcessing = ref(false)
+const uploadError = ref(null)
 const progress = ref(0)
 const viewMode = ref('split')
+const originalImageUrl = ref(null)
+const resultImageUrl = ref(null)
+const imageInfo = ref({ name: '', originalSize: '', elapsed: '' })
 
 const exampleImages = [
   { id: 1, label: '인물 사진', gradient: 'linear-gradient(135deg, #667eea, #764ba2)' },
@@ -235,34 +238,81 @@ function handleFileChange(e) {
 
 function useExample(example) {
   uploadedImage.value = example
-  startProcessing()
 }
 
-function processFile(file) {
+async function processFile(file) {
   uploadedImage.value = { label: file.name }
-  startProcessing()
-}
-
-function startProcessing() {
+  uploadError.value = null
   isProcessing.value = true
   progress.value = 0
-  const interval = setInterval(() => {
-    progress.value += Math.random() * 15
-    if (progress.value >= 100) {
-      progress.value = 100
-      clearInterval(interval)
-      setTimeout(() => {
-        isProcessing.value = false
-      }, 300)
+
+  if (originalImageUrl.value) URL.revokeObjectURL(originalImageUrl.value)
+  if (resultImageUrl.value) URL.revokeObjectURL(resultImageUrl.value)
+  originalImageUrl.value = URL.createObjectURL(file)
+
+  const progressInterval = setInterval(() => {
+    if (progress.value < 85) progress.value += Math.random() * 8
+  }, 200)
+
+  const startTime = Date.now()
+  try {
+    const formData = new FormData()
+    formData.append('image', file)
+
+    const response = await fetch('/api/images/upload', {
+      method: 'POST',
+      body: formData,
+    })
+
+    if (!response.ok) {
+      const text = await response.text()
+      throw new Error(text || `서버 오류 (${response.status})`)
     }
-  }, 100)
+
+    const blob = await response.blob()
+    resultImageUrl.value = URL.createObjectURL(blob)
+
+    const elapsed = ((Date.now() - startTime) / 1000).toFixed(2)
+    imageInfo.value = {
+      name: file.name,
+      originalSize: formatSize(file.size),
+      elapsed,
+    }
+
+    progress.value = 100
+    setTimeout(() => { isProcessing.value = false }, 300)
+  } catch (err) {
+    isProcessing.value = false
+    uploadError.value = err.message || '알 수 없는 오류가 발생했습니다.'
+  } finally {
+    clearInterval(progressInterval)
+  }
+}
+
+function formatSize(bytes) {
+  if (bytes >= 1024 * 1024) return (bytes / (1024 * 1024)).toFixed(1) + 'MB'
+  return (bytes / 1024).toFixed(0) + 'KB'
+}
+
+function downloadResult() {
+  if (!resultImageUrl.value) return
+  const a = document.createElement('a')
+  a.href = resultImageUrl.value
+  const baseName = imageInfo.value.name.replace(/\.[^.]+$/, '')
+  a.download = `${baseName}_no_bg.png`
+  a.click()
 }
 
 function reset() {
+  if (originalImageUrl.value) URL.revokeObjectURL(originalImageUrl.value)
+  if (resultImageUrl.value) URL.revokeObjectURL(resultImageUrl.value)
   uploadedImage.value = null
   isProcessing.value = false
+  uploadError.value = null
   progress.value = 0
   viewMode.value = 'split'
+  originalImageUrl.value = null
+  resultImageUrl.value = null
   if (fileInput.value) fileInput.value.value = ''
 }
 </script>
@@ -725,5 +775,62 @@ function reset() {
   width: 1px;
   height: 32px;
   background: var(--border);
+}
+
+/* 결과 이미지 */
+.result-image {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
+}
+
+.result-image.large {
+  min-height: 440px;
+  max-height: 600px;
+}
+
+/* 에러 섹션 */
+.error-section {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 400px;
+}
+
+.error-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  max-width: 320px;
+  text-align: center;
+  padding: 40px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-xl);
+}
+
+.error-icon {
+  width: 64px;
+  height: 64px;
+  background: rgba(239, 68, 68, 0.1);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #f87171;
+}
+
+.error-card h3 {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.error-card p {
+  font-size: 14px;
+  color: var(--text-secondary);
+  word-break: break-all;
 }
 </style>
