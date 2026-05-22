@@ -57,22 +57,33 @@ jobs:
           username: ${{ secrets.SSH_USER }}
           key: ${{ secrets.WAS1_SSH_KEY }}
           script: |
-            mkdir -p /home/${{ secrets.SSH_USER }}/app/api
+            APP_DIR=/home/${{ secrets.SSH_USER }}/app/api
+            APP_JAR=$APP_DIR/app.jar
+            APP_LOG=$APP_DIR/app.log
+            APP_PID=$APP_DIR/app.pid
 
-            PID=$(pgrep -f "java -jar /home/${{ secrets.SSH_USER }}/app/api/app.jar" || true)
+            mkdir -p $APP_DIR
 
-            if [ -n "$PID" ]; then
-              echo "Killing old process: $PID"
-              kill -15 $PID
-              sleep 3
+            if [ -f "$APP_PID" ]; then
+              OLD_PID=$(cat "$APP_PID")
+              if ps -p "$OLD_PID" > /dev/null 2>&1; then
+                echo "Killing old process: $OLD_PID"
+                kill -15 "$OLD_PID"
+                sleep 3
+              fi
+              rm -f "$APP_PID"
             fi
 
-            nohup java -jar /home/${{ secrets.SSH_USER }}/app/api/app.jar \
+            nohup java -jar "$APP_JAR" \
               --spring.profiles.active=prod \
-              > /home/${{ secrets.SSH_USER }}/app/api/app.log 2>&1 &
+              > "$APP_LOG" 2>&1 &
+
+            echo $! > "$APP_PID"
 
             sleep 5
-            ps -ef | grep app.jar | grep -v grep
+
+            echo "Started process:"
+            ps -p $(cat "$APP_PID") -f
 
       - name: Copy jar to WAS2
         uses: appleboy/scp-action@v0.1.7
@@ -91,19 +102,30 @@ jobs:
           username: ${{ secrets.SSH_USER }}
           key: ${{ secrets.WAS2_SSH_KEY }}
           script: |
-            mkdir -p /home/${{ secrets.SSH_USER }}/app/api
+            APP_DIR=/home/${{ secrets.SSH_USER }}/app/api
+            APP_JAR=$APP_DIR/app.jar
+            APP_LOG=$APP_DIR/app.log
+            APP_PID=$APP_DIR/app.pid
 
-            PID=$(pgrep -f "java -jar /home/${{ secrets.SSH_USER }}/app/api/app.jar" || true)
+            mkdir -p $APP_DIR
 
-            if [ -n "$PID" ]; then
-              echo "Killing old process: $PID"
-              kill -15 $PID
-              sleep 3
+            if [ -f "$APP_PID" ]; then
+              OLD_PID=$(cat "$APP_PID")
+              if ps -p "$OLD_PID" > /dev/null 2>&1; then
+                echo "Killing old process: $OLD_PID"
+                kill -15 "$OLD_PID"
+                sleep 3
+              fi
+              rm -f "$APP_PID"
             fi
 
-            nohup java -jar /home/${{ secrets.SSH_USER }}/app/api/app.jar \
+            nohup java -jar "$APP_JAR" \
               --spring.profiles.active=prod \
-              > /home/${{ secrets.SSH_USER }}/app/api/app.log 2>&1 &
+              > "$APP_LOG" 2>&1 &
+
+            echo $! > "$APP_PID"
 
             sleep 5
-            ps -ef | grep app.jar | grep -v grep
+
+            echo "Started process:"
+            ps -p $(cat "$APP_PID") -f
