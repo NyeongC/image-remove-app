@@ -48,7 +48,7 @@ jobs:
           key: ${{ secrets.WAS1_SSH_KEY }}
           source: "backend/image-remove/deploy/app.jar"
           target: "/home/ubuntu/app/api"
-          strip_components: 3
+          strip_components: 4
 
       - name: Restart WAS1
         uses: appleboy/ssh-action@v1.0.3
@@ -57,12 +57,21 @@ jobs:
           username: ${{ secrets.SSH_USER }}
           key: ${{ secrets.WAS1_SSH_KEY }}
           script: |
-            mkdir -p /home/ubuntu/app/api
-            pkill -f '/home/ubuntu/app/api/app.jar' || true
-            nohup java -jar /home/ubuntu/app/api/app.jar \
+            mkdir -p /home/${{ secrets.SSH_USER }}/app/api
+
+            PID=$(pgrep -f "java -jar /home/${{ secrets.SSH_USER }}/app/api/app.jar" || true)
+
+            if [ -n "$PID" ]; then
+              echo "Killing old process: $PID"
+              kill -15 $PID
+              sleep 3
+            fi
+
+            nohup java -jar /home/${{ secrets.SSH_USER }}/app/api/app.jar \
               --spring.profiles.active=prod \
-              > /home/ubuntu/app/api/app.log 2>&1 &
-            sleep 3
+              > /home/${{ secrets.SSH_USER }}/app/api/app.log 2>&1 &
+
+            sleep 5
             ps -ef | grep app.jar | grep -v grep
 
       - name: Copy jar to WAS2
@@ -73,7 +82,7 @@ jobs:
           key: ${{ secrets.WAS2_SSH_KEY }}
           source: "backend/image-remove/deploy/app.jar"
           target: "/home/ubuntu/app/api"
-          strip_components: 3
+          strip_components: 4
 
       - name: Restart WAS2
         uses: appleboy/ssh-action@v1.0.3
@@ -82,10 +91,19 @@ jobs:
           username: ${{ secrets.SSH_USER }}
           key: ${{ secrets.WAS2_SSH_KEY }}
           script: |
-            mkdir -p /home/ubuntu/app/api
-            pkill -f '/home/ubuntu/app/api/app.jar' || true
-            nohup java -jar /home/ubuntu/app/api/app.jar \
+            mkdir -p /home/${{ secrets.SSH_USER }}/app/api
+
+            PID=$(pgrep -f "java -jar /home/${{ secrets.SSH_USER }}/app/api/app.jar" || true)
+
+            if [ -n "$PID" ]; then
+              echo "Killing old process: $PID"
+              kill -15 $PID
+              sleep 3
+            fi
+
+            nohup java -jar /home/${{ secrets.SSH_USER }}/app/api/app.jar \
               --spring.profiles.active=prod \
-              > /home/ubuntu/app/api/app.log 2>&1 &
-            sleep 3
+              > /home/${{ secrets.SSH_USER }}/app/api/app.log 2>&1 &
+
+            sleep 5
             ps -ef | grep app.jar | grep -v grep
