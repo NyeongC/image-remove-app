@@ -48,7 +48,7 @@ jobs:
           key: ${{ secrets.WAS1_SSH_KEY }}
           source: "backend/image-remove/deploy/app.jar"
           target: "/home/ubuntu/app/api"
-          strip_components: 4
+          strip_components: 3
 
       - name: Restart WAS1
         uses: appleboy/ssh-action@v1.0.3
@@ -57,12 +57,13 @@ jobs:
           username: ${{ secrets.SSH_USER }}
           key: ${{ secrets.WAS1_SSH_KEY }}
           script: |
-            APP_DIR=/home/${{ secrets.SSH_USER }}/app/api
+            APP_DIR=/home/ubuntu/app/api
             APP_JAR=$APP_DIR/app.jar
             APP_LOG=$APP_DIR/app.log
             APP_PID=$APP_DIR/app.pid
 
             mkdir -p $APP_DIR
+            ls -al $APP_DIR
 
             if [ -f "$APP_PID" ]; then
               OLD_PID=$(cat "$APP_PID")
@@ -81,7 +82,6 @@ jobs:
             echo $! > "$APP_PID"
 
             sleep 5
-
             echo "Started process:"
             ps -p $(cat "$APP_PID") -f
 
@@ -93,7 +93,7 @@ jobs:
           key: ${{ secrets.WAS2_SSH_KEY }}
           source: "backend/image-remove/deploy/app.jar"
           target: "/home/ubuntu/app/api"
-          strip_components: 4
+          strip_components: 3
 
       - name: Restart WAS2
         uses: appleboy/ssh-action@v1.0.3
@@ -102,12 +102,13 @@ jobs:
           username: ${{ secrets.SSH_USER }}
           key: ${{ secrets.WAS2_SSH_KEY }}
           script: |
-            APP_DIR=/home/${{ secrets.SSH_USER }}/app/api
+            APP_DIR=/home/ubuntu/app/api
             APP_JAR=$APP_DIR/app.jar
             APP_LOG=$APP_DIR/app.log
             APP_PID=$APP_DIR/app.pid
 
             mkdir -p $APP_DIR
+            ls -al $APP_DIR
 
             if [ -f "$APP_PID" ]; then
               OLD_PID=$(cat "$APP_PID")
@@ -126,6 +127,5 @@ jobs:
             echo $! > "$APP_PID"
 
             sleep 5
-
             echo "Started process:"
             ps -p $(cat "$APP_PID") -f
