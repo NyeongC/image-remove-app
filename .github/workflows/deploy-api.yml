@@ -36,7 +36,9 @@ jobs:
       - name: Prepare jar
         run: |
           mkdir -p deploy
-          cp build/libs/*.jar deploy/app.jar
+          ls -al build/libs
+          cp $(find build/libs -name "*.jar" ! -name "*-plain.jar" | head -n 1) deploy/app.jar
+          ls -al deploy
 
       - name: Copy jar to WAS1
         uses: appleboy/scp-action@v0.1.7
