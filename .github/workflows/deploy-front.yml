@@ -32,23 +32,24 @@ jobs:
       - name: Build Vue
         run: npm run build
 
+      - name: Prepare SSH key
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.NGINX_SSH_KEY }}" > ~/.ssh/nginx_key
+          chmod 600 ~/.ssh/nginx_key
+          ssh-keyscan -H ${{ secrets.NGINX_HOST }} >> ~/.ssh/known_hosts
+
+      - name: Prepare remote directory
+        run: |
+          ssh -i ~/.ssh/nginx_key ${{ secrets.SSH_USER }}@${{ secrets.NGINX_HOST }} "mkdir -p /home/ubuntu/app/front"
+
       - name: Copy dist to Nginx
-        uses: appleboy/scp-action@master
-        with:
-          host: ${{ secrets.NGINX_HOST }}
-          username: ${{ secrets.SSH_USER }}
-          key: ${{ secrets.NGINX_SSH_KEY }}
-          source: "frontend/dist/*"
-          target: "/home/ubuntu/app/front"
-          strip_components: 2
+        run: |
+          scp -i ~/.ssh/nginx_key -r dist/* ${{ secrets.SSH_USER }}@${{ secrets.NGINX_HOST }}:/home/ubuntu/app/front/
 
       - name: Deploy to Nginx
-        uses: appleboy/ssh-action@v1.0.3
-        with:
-          host: ${{ secrets.NGINX_HOST }}
-          username: ${{ secrets.SSH_USER }}
-          key: ${{ secrets.NGINX_SSH_KEY }}
-          script: |
+        run: |
+          ssh -i ~/.ssh/nginx_key ${{ secrets.SSH_USER }}@${{ secrets.NGINX_HOST }} << 'EOF'
             FRONT_SRC=/home/ubuntu/app/front
             NGINX_ROOT=/var/www/html
 
@@ -65,3 +66,4 @@ jobs:
             sudo systemctl reload nginx
 
             echo "Deploy front completed"
+          EOF
