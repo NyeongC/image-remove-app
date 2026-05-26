@@ -18,7 +18,7 @@
               <line x1="12" y1="3" x2="12" y2="15"/>
             </svg>
           </div>
-          <h3>이미지를 드래그하거나 클릭해서 업로드</h3>
+          <h3>이미지를 드래그하거나 클릭해서 업로드!!</h3>
           <p>JPG, PNG, WEBP 지원 · 최대 25MB</p>
           <button type="button" class="btn-primary upload-btn">
             파일 선택
