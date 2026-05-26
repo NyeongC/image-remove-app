@@ -1,0 +1,67 @@
+name: Deploy Front
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+    paths:
+      - 'frontend/**'
+      - '.github/workflows/deploy-front.yml'
+
+jobs:
+  deploy-front:
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: frontend
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build Vue
+        run: npm run build
+
+      - name: Copy dist to Nginx
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.NGINX_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.NGINX_SSH_KEY }}
+          source: "frontend/dist/*"
+          target: "/home/ubuntu/app/front"
+          strip_components: 2
+
+      - name: Deploy to Nginx
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.NGINX_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.NGINX_SSH_KEY }}
+          script: |
+            FRONT_SRC=/home/ubuntu/app/front
+            NGINX_ROOT=/var/www/html
+
+            echo "Check uploaded files"
+            ls -al $FRONT_SRC
+
+            echo "Remove old frontend files"
+            sudo rm -rf $NGINX_ROOT/*
+
+            echo "Copy new frontend files"
+            sudo cp -r $FRONT_SRC/* $NGINX_ROOT/
+
+            echo "Reload nginx"
+            sudo systemctl reload nginx
+
+            echo "Deploy front completed"
