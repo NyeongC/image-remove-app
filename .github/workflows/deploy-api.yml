@@ -65,25 +65,50 @@ jobs:
             mkdir -p $APP_DIR
             ls -al $APP_DIR
 
+            echo "Stopping old process by PID file..."
             if [ -f "$APP_PID" ]; then
               OLD_PID=$(cat "$APP_PID")
               if ps -p "$OLD_PID" > /dev/null 2>&1; then
-                echo "Killing old process: $OLD_PID"
-                kill -15 "$OLD_PID"
-                sleep 3
+                echo "Killing old process from pid file: $OLD_PID"
+                kill -15 "$OLD_PID" || true
+                sleep 5
               fi
               rm -f "$APP_PID"
             fi
 
+            echo "Stopping old image-remove process..."
+            pkill -15 -f "image-remove" || true
+            sleep 3
+
+            echo "Stopping process using port 8080..."
+            PORT_PID=$(lsof -ti:8080 || true)
+            if [ -n "$PORT_PID" ]; then
+              echo "Killing process using 8080: $PORT_PID"
+              kill -15 $PORT_PID || true
+              sleep 5
+            fi
+
+            PORT_PID=$(lsof -ti:8080 || true)
+            if [ -n "$PORT_PID" ]; then
+              echo "Force killing process using 8080: $PORT_PID"
+              kill -9 $PORT_PID || true
+              sleep 2
+            fi
+
+            echo "Starting new application..."
             nohup java -jar "$APP_JAR" \
               --spring.profiles.active=prod \
               > "$APP_LOG" 2>&1 &
 
             echo $! > "$APP_PID"
 
-            sleep 5
+            sleep 8
+
             echo "Started process:"
-            ps -p $(cat "$APP_PID") -f
+            ps -p $(cat "$APP_PID") -f || true
+
+            echo "Recent logs:"
+            tail -n 80 "$APP_LOG"
 
       - name: Copy jar to WAS2
         uses: appleboy/scp-action@v0.1.7
@@ -110,22 +135,47 @@ jobs:
             mkdir -p $APP_DIR
             ls -al $APP_DIR
 
+            echo "Stopping old process by PID file..."
             if [ -f "$APP_PID" ]; then
               OLD_PID=$(cat "$APP_PID")
               if ps -p "$OLD_PID" > /dev/null 2>&1; then
-                echo "Killing old process: $OLD_PID"
-                kill -15 "$OLD_PID"
-                sleep 3
+                echo "Killing old process from pid file: $OLD_PID"
+                kill -15 "$OLD_PID" || true
+                sleep 5
               fi
               rm -f "$APP_PID"
             fi
 
+            echo "Stopping old image-remove process..."
+            pkill -15 -f "image-remove" || true
+            sleep 3
+
+            echo "Stopping process using port 8080..."
+            PORT_PID=$(lsof -ti:8080 || true)
+            if [ -n "$PORT_PID" ]; then
+              echo "Killing process using 8080: $PORT_PID"
+              kill -15 $PORT_PID || true
+              sleep 5
+            fi
+
+            PORT_PID=$(lsof -ti:8080 || true)
+            if [ -n "$PORT_PID" ]; then
+              echo "Force killing process using 8080: $PORT_PID"
+              kill -9 $PORT_PID || true
+              sleep 2
+            fi
+
+            echo "Starting new application..."
             nohup java -jar "$APP_JAR" \
               --spring.profiles.active=prod \
               > "$APP_LOG" 2>&1 &
 
             echo $! > "$APP_PID"
 
-            sleep 5
+            sleep 8
+
             echo "Started process:"
-            ps -p $(cat "$APP_PID") -f
+            ps -p $(cat "$APP_PID") -f || true
+
+            echo "Recent logs:"
+            tail -n 80 "$APP_LOG"
