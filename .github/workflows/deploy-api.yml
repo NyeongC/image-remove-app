@@ -76,12 +76,9 @@ jobs:
               rm -f "$APP_PID"
             fi
 
-            echo "Stopping old image-remove process..."
-            pkill -15 -f "image-remove" || true
-            sleep 3
-
             echo "Stopping process using port 8080..."
             PORT_PID=$(lsof -ti:8080 || true)
+
             if [ -n "$PORT_PID" ]; then
               echo "Killing process using 8080: $PORT_PID"
               kill -15 $PORT_PID || true
@@ -89,6 +86,7 @@ jobs:
             fi
 
             PORT_PID=$(lsof -ti:8080 || true)
+
             if [ -n "$PORT_PID" ]; then
               echo "Force killing process using 8080: $PORT_PID"
               kill -9 $PORT_PID || true
@@ -146,12 +144,9 @@ jobs:
               rm -f "$APP_PID"
             fi
 
-            echo "Stopping old image-remove process..."
-            pkill -15 -f "image-remove" || true
-            sleep 3
-
             echo "Stopping process using port 8080..."
             PORT_PID=$(lsof -ti:8080 || true)
+
             if [ -n "$PORT_PID" ]; then
               echo "Killing process using 8080: $PORT_PID"
               kill -15 $PORT_PID || true
@@ -159,6 +154,7 @@ jobs:
             fi
 
             PORT_PID=$(lsof -ti:8080 || true)
+
             if [ -n "$PORT_PID" ]; then
               echo "Force killing process using 8080: $PORT_PID"
               kill -9 $PORT_PID || true
