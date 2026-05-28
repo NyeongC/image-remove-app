@@ -38,6 +38,11 @@ const router = createRouter({
           name: 'app-lb-test',
           component: () => import('../views/app/LbTestView.vue'),
         },
+        {
+          path: 'request-context-test',
+          name: 'app-rc-test',
+          component: () => import('../views/app/RequestContextTestView.vue'),
+        },
       ],
     },
   ],

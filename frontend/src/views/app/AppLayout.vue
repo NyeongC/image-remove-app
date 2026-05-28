@@ -74,6 +74,17 @@
             <span v-if="!sidebarCollapsed">LB 테스트</span>
           </Transition>
         </RouterLink>
+
+        <RouterLink to="/app/request-context-test" class="nav-item">
+          <div class="nav-icon">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/>
+            </svg>
+          </div>
+          <Transition name="fade">
+            <span v-if="!sidebarCollapsed">RC 테스트</span>
+          </Transition>
+        </RouterLink>
       </nav>
 
       <!-- 사용량 -->
@@ -147,6 +158,7 @@
       <RouterLink to="/app/history">히스토리</RouterLink>
       <RouterLink to="/app/settings">설정</RouterLink>
       <RouterLink to="/app/lb-test">LB테스트</RouterLink>
+      <RouterLink to="/app/request-context-test">RC테스트</RouterLink>
     </div>
   </div>
 </template>
@@ -164,6 +176,7 @@ const pageTitle = computed(() => {
     'app-history': '히스토리',
     'app-settings': '설정',
     'app-lb-test': 'LB 테스트',
+    'app-rc-test': 'RequestContext 테스트',
   }
   return titles[route.name] ?? '배경 제거'
 })
