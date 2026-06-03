@@ -9,3 +9,11 @@ spring:
 python:
   worker:
     url: http://10.0.0.248:5000
+
+cloudflare:
+  r2:
+    bucket: background-remove
+    access-key: ${R2_ACCESS_KEY}
+    secret-key: ${R2_SECRET_KEY}
+    endpoint: ${R2_ENDPOINT}
+    public-url: ${R2_PUBLIC_URL}
