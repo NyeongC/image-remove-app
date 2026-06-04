@@ -6,6 +6,12 @@ spring:
       max-file-size: 20MB
       max-request-size: 20MB
 
+  rabbitmq:
+    host: ${RABBITMQ_HOST}
+    port: 5672
+    username: image_user
+    password: ${RABBITMQ_PASSWORD}
+
 python:
   worker:
     url: http://10.0.0.248:5000

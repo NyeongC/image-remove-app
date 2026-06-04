@@ -99,6 +99,8 @@ jobs:
               R2_SECRET_KEY="${{ secrets.R2_SECRET_KEY }}" \
               R2_ENDPOINT="${{ secrets.R2_ENDPOINT }}" \
               R2_PUBLIC_URL="${{ secrets.R2_PUBLIC_URL }}" \
+              RABBITMQ_HOST="${{ secrets.RABBITMQ_HOST }}" \
+              RABBITMQ_PASSWORD="${{ secrets.RABBITMQ_PASSWORD }}" \
               java -jar "$APP_JAR" \
               --spring.profiles.active=prod \
               > "$APP_LOG" 2>&1 &
@@ -172,6 +174,8 @@ jobs:
               R2_SECRET_KEY="${{ secrets.R2_SECRET_KEY }}" \
               R2_ENDPOINT="${{ secrets.R2_ENDPOINT }}" \
               R2_PUBLIC_URL="${{ secrets.R2_PUBLIC_URL }}" \
+              RABBITMQ_HOST="${{ secrets.RABBITMQ_HOST }}" \
+              RABBITMQ_PASSWORD="${{ secrets.RABBITMQ_PASSWORD }}" \              
               java -jar "$APP_JAR" \
               --spring.profiles.active=prod \
               > "$APP_LOG" 2>&1 &
