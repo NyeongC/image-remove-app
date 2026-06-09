@@ -22,27 +22,33 @@ jobs:
           key: ${{ secrets.WORKER_SSH_KEY }}
           script: |
             cd ~/image-remove-app
-
+          
             git pull origin main
-
+          
             cd worker
-
+          
             pip3 install -r requirements.txt
-
-            if pgrep -f "python3 -u consumer.py" > /dev/null; then
-            pkill -f "python3 -u consumer.py"
+          
+            if [ -f consumer.pid ]; then
+              OLD_PID=$(cat consumer.pid)
+              if ps -p $OLD_PID > /dev/null 2>&1; then
+                kill $OLD_PID || true
+                sleep 2
+              fi
+              rm -f consumer.pid
             fi
-
+          
             export WORKER_RABBITMQ_HOST='${{ secrets.WORKER_RABBITMQ_HOST }}'
             export WORKER_RABBITMQ_PORT='5672'
             export WORKER_RABBITMQ_USER='image_user'
             export RABBITMQ_PASSWORD='${{ secrets.RABBITMQ_PASSWORD }}'
             export IMAGE_QUEUE='image.queue'
-
+          
             export R2_ENDPOINT='${{ secrets.R2_ENDPOINT }}'
             export R2_ACCESS_KEY='${{ secrets.R2_ACCESS_KEY }}'
             export R2_SECRET_KEY='${{ secrets.R2_SECRET_KEY }}'
             export R2_BUCKET='${{ secrets.R2_BUCKET }}'
             export R2_PUBLIC_URL='${{ secrets.R2_PUBLIC_URL }}'
-
+          
             nohup python3 -u consumer.py > consumer.log 2>&1 &
+            echo $! > consumer.pid
