@@ -1,0 +1,46 @@
+name: Deploy Worker
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+    paths:
+      - 'worker/**'
+      - '.github/workflows/deploy-worker.yml'
+
+jobs:
+  deploy-worker:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Deploy worker server
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.WORKER_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.WORKER_SSH_KEY }}
+          script: |
+            cd ~/image-remove-app
+
+            git pull origin main
+
+            cd worker
+
+            pip3 install -r requirements.txt
+
+            pkill -f consumer.py || true
+
+            export WORKER_RABBITMQ_HOST='${{ secrets.WORKER_RABBITMQ_HOST }}'
+            export WORKER_RABBITMQ_PORT='5672'
+            export WORKER_RABBITMQ_USER='image_user'
+            export RABBITMQ_PASSWORD='${{ secrets.RABBITMQ_PASSWORD }}'
+            export IMAGE_QUEUE='image.queue'
+
+            export R2_ENDPOINT='${{ secrets.R2_ENDPOINT }}'
+            export R2_ACCESS_KEY='${{ secrets.R2_ACCESS_KEY }}'
+            export R2_SECRET_KEY='${{ secrets.R2_SECRET_KEY }}'
+            export R2_BUCKET='${{ secrets.R2_BUCKET }}'
+            export R2_PUBLIC_URL='${{ secrets.R2_PUBLIC_URL }}'
+
+            nohup python3 -u consumer.py > consumer.log 2>&1 &
