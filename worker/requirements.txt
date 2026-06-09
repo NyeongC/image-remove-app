@@ -4,3 +4,6 @@ python-multipart
 rembg
 pillow
 onnxruntime
+pika
+requests
+boto3
