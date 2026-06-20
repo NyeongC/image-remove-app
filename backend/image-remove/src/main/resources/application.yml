@@ -56,7 +56,6 @@ jwt:
 server:
   forward-headers-strategy: framework
 
-logging:
-  level:
-    org.springframework.security: TRACE
-    org.springframework.security.oauth2: TRACE
+app:
+  oauth2:
+    redirect-uri: https://edgecut.xyz/app
