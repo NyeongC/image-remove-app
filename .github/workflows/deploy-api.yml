@@ -103,6 +103,9 @@ jobs:
               RABBITMQ_PASSWORD="${{ secrets.RABBITMQ_PASSWORD }}" \
               DB_HOST="${{ secrets.DB_HOST }}" \
               DB_PASSWORD="${{ secrets.DB_PASSWORD }}" \
+              GOOGLE_CLIENT_ID="${{ secrets.GOOGLE_CLIENT_ID }}" \
+              GOOGLE_CLIENT_SECRET="${{ secrets.GOOGLE_CLIENT_SECRET }}" \
+              JWT_SECRET_KEY="${{ secrets.JWT_SECRET_KEY }}" \
               java -jar "$APP_JAR" \
               --spring.profiles.active=prod \
               > "$APP_LOG" 2>&1 &
@@ -180,6 +183,9 @@ jobs:
               RABBITMQ_PASSWORD="${{ secrets.RABBITMQ_PASSWORD }}" \
               DB_HOST="${{ secrets.DB_HOST }}" \
               DB_PASSWORD="${{ secrets.DB_PASSWORD }}" \
+              GOOGLE_CLIENT_ID="${{ secrets.GOOGLE_CLIENT_ID }}" \
+              GOOGLE_CLIENT_SECRET="${{ secrets.GOOGLE_CLIENT_SECRET }}" \
+              JWT_SECRET_KEY="${{ secrets.JWT_SECRET_KEY }}" \
               java -jar "$APP_JAR" \
               --spring.profiles.active=prod \
               > "$APP_LOG" 2>&1 &
