@@ -121,6 +121,7 @@ jobs:
             tail -n 80 "$APP_LOG"
 
       - name: Copy jar to WAS2
+        if: false
         uses: appleboy/scp-action@v0.1.7
         with:
           host: ${{ secrets.WAS2_HOST }}
@@ -131,6 +132,7 @@ jobs:
           strip_components: 3
 
       - name: Restart WAS2
+        if: false
         uses: appleboy/ssh-action@v1.0.3
         with:
           host: ${{ secrets.WAS2_HOST }}

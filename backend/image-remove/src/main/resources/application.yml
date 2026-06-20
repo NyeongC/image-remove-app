@@ -59,3 +59,8 @@ server:
 app:
   oauth2:
     redirect-uri: https://edgecut.xyz/app
+
+logging:
+  level:
+    org.springframework.security: TRACE
+    org.springframework.security.oauth2: TRACE
