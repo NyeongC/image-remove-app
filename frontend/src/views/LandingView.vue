@@ -11,8 +11,13 @@
           <a href="#pricing" class="nav-link">요금제</a>
         </div>
         <div class="nav-actions">
-          <RouterLink to="/login" class="btn-ghost">로그인</RouterLink>
-          <RouterLink to="/login" class="btn-primary">무료 시작</RouterLink>
+          <template v-if="isLoggedIn">
+            <RouterLink to="/app" class="btn-primary">앱으로 이동</RouterLink>
+          </template>
+          <template v-else>
+            <RouterLink to="/login" class="btn-ghost">로그인</RouterLink>
+            <RouterLink to="/login" class="btn-primary">무료 시작</RouterLink>
+          </template>
         </div>
       </div>
     </nav>
@@ -250,6 +255,19 @@
 
 <script setup>
 import { RouterLink } from 'vue-router'
+
+function isTokenValid(token) {
+  try {
+    const base64 = token.split('.')[1].replace(/-/g, '+').replace(/_/g, '/')
+    const payload = JSON.parse(atob(base64))
+    return payload.exp * 1000 > Date.now()
+  } catch {
+    return false
+  }
+}
+
+const token = localStorage.getItem('accessToken')
+const isLoggedIn = token ? isTokenValid(token) : false
 </script>
 
 <style scoped>

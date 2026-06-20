@@ -110,14 +110,17 @@
             <span class="user-email">{{ tokenPayload.sub }}</span>
           </div>
         </Transition>
-        <Transition name="fade">
-          <button v-if="!sidebarCollapsed" class="user-menu-btn" @click="logout" title="로그아웃">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4M16 17l5-5-5-5M21 12H9"/>
-            </svg>
-          </button>
-        </Transition>
       </div>
+
+      <!-- 로그아웃 -->
+      <button class="logout-btn" @click="logout">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4M16 17l5-5-5-5M21 12H9"/>
+        </svg>
+        <Transition name="fade">
+          <span v-if="!sidebarCollapsed">로그아웃</span>
+        </Transition>
+      </button>
     </aside>
 
     <!-- 메인 영역 -->
@@ -164,7 +167,8 @@ function decodeToken() {
   try {
     const token = localStorage.getItem('accessToken')
     if (!token) return {}
-    return JSON.parse(atob(token.split('.')[1]))
+    const base64 = token.split('.')[1].replace(/-/g, '+').replace(/_/g, '/')
+    return JSON.parse(atob(base64))
   } catch {
     return {}
   }
@@ -403,16 +407,31 @@ function logout() {
   gap: 10px;
   padding: 10px 8px;
   border-radius: var(--radius-md);
-  cursor: pointer;
-  transition: all 0.2s;
   border-top: 1px solid var(--border);
   padding-top: 16px;
   margin-top: 4px;
-  overflow: hidden;
 }
 
-.sidebar-user:hover {
-  background: var(--bg-card);
+.logout-btn {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 8px;
+  border-radius: var(--radius-md);
+  border: none;
+  background: transparent;
+  color: var(--text-secondary);
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+  width: 100%;
+  white-space: nowrap;
+}
+
+.logout-btn:hover {
+  background: rgba(239, 68, 68, 0.1);
+  color: #f87171;
 }
 
 .user-avatar {
