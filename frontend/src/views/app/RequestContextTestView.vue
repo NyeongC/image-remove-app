@@ -177,7 +177,10 @@ async function testRequestContext() {
   loading.value = true
   error.value = null
   try {
-    const res = await fetch('/api/request-context-test')
+    const token = localStorage.getItem('accessToken')
+    const res = await fetch('/api/request-context-test', {
+      headers: { Authorization: `Bearer ${token}` },
+    })
     if (!res.ok) throw new Error(`HTTP ${res.status}`)
     const data = await res.json()
     contextInfo.value = data

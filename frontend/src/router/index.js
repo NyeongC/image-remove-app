@@ -52,6 +52,15 @@ const router = createRouter({
   ],
 })
 
+function isTokenValid(token) {
+  try {
+    const payload = JSON.parse(atob(token.split('.')[1]))
+    return payload.exp * 1000 > Date.now()
+  } catch {
+    return false
+  }
+}
+
 router.beforeEach((to, from, next) => {
   const accessToken = to.query.token
   const refreshToken = to.query.refreshToken
@@ -70,9 +79,11 @@ router.beforeEach((to, from, next) => {
   }
 
   if (to.meta.requiresAuth) {
-    const savedAccessToken = localStorage.getItem(ACCESS_TOKEN_KEY)
+    const savedToken = localStorage.getItem(ACCESS_TOKEN_KEY)
 
-    if (!savedAccessToken) {
+    if (!savedToken || !isTokenValid(savedToken)) {
+      localStorage.removeItem(ACCESS_TOKEN_KEY)
+      localStorage.removeItem(REFRESH_TOKEN_KEY)
       next('/login')
       return
     }

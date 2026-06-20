@@ -111,9 +111,9 @@
           </div>
         </Transition>
         <Transition name="fade">
-          <button v-if="!sidebarCollapsed" class="user-menu-btn">
+          <button v-if="!sidebarCollapsed" class="user-menu-btn" @click="logout" title="로그아웃">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/>
+              <path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4M16 17l5-5-5-5M21 12H9"/>
             </svg>
           </button>
         </Transition>
@@ -154,10 +154,11 @@
 
 <script setup>
 import { ref, computed } from 'vue'
-import { RouterLink, RouterView, useRoute } from 'vue-router'
+import { RouterLink, RouterView, useRoute, useRouter } from 'vue-router'
 
 const sidebarCollapsed = ref(false)
 const route = useRoute()
+const router = useRouter()
 
 const pageTitle = computed(() => {
   const titles = {
@@ -169,6 +170,12 @@ const pageTitle = computed(() => {
   }
   return titles[route.name] ?? '배경 제거'
 })
+
+function logout() {
+  localStorage.removeItem('accessToken')
+  localStorage.removeItem('refreshToken')
+  router.push('/login')
+}
 </script>
 
 <style scoped>
