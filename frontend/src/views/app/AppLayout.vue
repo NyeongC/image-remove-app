@@ -103,11 +103,11 @@
 
       <!-- 유저 프로필 -->
       <div class="sidebar-user">
-        <div class="user-avatar">J</div>
+        <div class="user-avatar">{{ userAvatar }}</div>
         <Transition name="fade">
           <div v-if="!sidebarCollapsed" class="user-info">
-            <span class="user-name">홍길동</span>
-            <span class="user-plan">무료 플랜</span>
+            <span class="user-name">{{ userName }}</span>
+            <span class="user-email">{{ tokenPayload.sub }}</span>
           </div>
         </Transition>
         <Transition name="fade">
@@ -159,6 +159,20 @@ import { RouterLink, RouterView, useRoute, useRouter } from 'vue-router'
 const sidebarCollapsed = ref(false)
 const route = useRoute()
 const router = useRouter()
+
+function decodeToken() {
+  try {
+    const token = localStorage.getItem('accessToken')
+    if (!token) return {}
+    return JSON.parse(atob(token.split('.')[1]))
+  } catch {
+    return {}
+  }
+}
+
+const tokenPayload = decodeToken()
+const userName = tokenPayload.nickname || tokenPayload.sub || '사용자'
+const userAvatar = userName.charAt(0).toUpperCase()
 
 const pageTitle = computed(() => {
   const titles = {
@@ -430,7 +444,7 @@ function logout() {
   white-space: nowrap;
 }
 
-.user-plan {
+.user-email {
   font-size: 11px;
   color: var(--text-muted);
   white-space: nowrap;

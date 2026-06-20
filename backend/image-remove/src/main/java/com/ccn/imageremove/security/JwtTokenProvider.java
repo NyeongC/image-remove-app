@@ -40,6 +40,7 @@ public class JwtTokenProvider {
                 .setExpiration(expiry)
                 .setSubject(user.getEmail())
                 .claim("id", user.getId())
+                .claim("nickname", user.getNickname())
                 .signWith(getSigningKey(), SignatureAlgorithm.HS256)
                 .compact();
     }
