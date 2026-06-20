@@ -12,6 +12,19 @@ spring:
     username: image_user
     password: ${RABBITMQ_PASSWORD}
 
+  datasource:
+    url: jdbc:postgresql://${DB_HOST}:5432/image_db
+    username: image_user
+    password: ${DB_PASSWORD}
+    driver-class-name: org.postgresql.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        format_sql: true
+    show-sql: true
 python:
   worker:
     url: http://10.0.0.248:5000
