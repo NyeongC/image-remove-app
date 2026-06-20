@@ -259,8 +259,13 @@ async function processFile(file) {
     const formData = new FormData()
     formData.append('image', file)
 
+    const accessToken = localStorage.getItem('accessToken')
+
     const response = await fetch('/api/images/upload', {
       method: 'POST',
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
       body: formData,
     })
 

@@ -1,6 +1,9 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import LandingView from '../views/LandingView.vue'
 
+const ACCESS_TOKEN_KEY = 'accessToken'
+const REFRESH_TOKEN_KEY = 'refreshToken'
+
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
@@ -17,6 +20,7 @@ const router = createRouter({
     {
       path: '/app',
       component: () => import('../views/app/AppLayout.vue'),
+      meta: { requiresAuth: true },
       children: [
         {
           path: '',
@@ -46,6 +50,35 @@ const router = createRouter({
       ],
     },
   ],
+})
+
+router.beforeEach((to, from, next) => {
+  const accessToken = to.query.token
+  const refreshToken = to.query.refreshToken
+
+  if (accessToken && refreshToken) {
+    localStorage.setItem(ACCESS_TOKEN_KEY, accessToken)
+    localStorage.setItem(REFRESH_TOKEN_KEY, refreshToken)
+
+    next({
+      path: to.path,
+      query: {},
+      replace: true,
+    })
+
+    return
+  }
+
+  if (to.meta.requiresAuth) {
+    const savedAccessToken = localStorage.getItem(ACCESS_TOKEN_KEY)
+
+    if (!savedAccessToken) {
+      next('/login')
+      return
+    }
+  }
+
+  next()
 })
 
 export default router
