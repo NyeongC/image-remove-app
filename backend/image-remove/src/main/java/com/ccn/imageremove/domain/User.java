@@ -2,14 +2,13 @@ package com.ccn.imageremove.domain;
 
 import jakarta.persistence.*;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDateTime;
-
-@Entity
 @Table(name = "users")
 @Getter
+@Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class User {
 
@@ -20,31 +19,17 @@ public class User {
     @Column(nullable = false, unique = true)
     private String email;
 
-    private String name;
+    @Column
+    private String nickname;
 
-    @Column(columnDefinition = "TEXT")
-    private String picture;
-
-    @Column(nullable = false)
-    private String provider;
-
-    @Column(nullable = false)
-    private String providerId;
-
-    @Column(nullable = false)
-    private String role = "USER";
-
-    private LocalDateTime createdAt;
-
-    private LocalDateTime updatedAt;
-
-    public User(String email, String name, String picture, String provider, String providerId) {
+    @Builder
+    public User(String email, String nickname) {
         this.email = email;
-        this.name = name;
-        this.picture = picture;
-        this.provider = provider;
-        this.providerId = providerId;
-        this.createdAt = LocalDateTime.now();
-        this.updatedAt = LocalDateTime.now();
+        this.nickname = nickname;
+    }
+
+    public User update(String nickname) {
+        this.nickname = nickname;
+        return this;
     }
 }
