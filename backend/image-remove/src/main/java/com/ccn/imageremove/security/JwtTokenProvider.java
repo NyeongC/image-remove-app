@@ -4,9 +4,12 @@ import com.ccn.imageremove.domain.User;
 import io.jsonwebtoken.Header;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.security.Keys;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
+import java.nio.charset.StandardCharsets;
+import java.security.Key;
 import java.time.Duration;
 import java.util.Date;
 
@@ -27,7 +30,13 @@ public class JwtTokenProvider {
                 .setExpiration(expiry)
                 .setSubject(user.getEmail())
                 .claim("id", user.getId())
-                .signWith(SignatureAlgorithm.HS256, jwtProperties.getSecretKey())
+                .signWith(getSigningKey(), SignatureAlgorithm.HS256)
                 .compact();
+    }
+
+    private Key getSigningKey() {
+        return Keys.hmacShaKeyFor(
+                jwtProperties.getSecretKey().getBytes(StandardCharsets.UTF_8)
+        );
     }
 }
