@@ -52,3 +52,6 @@ cloudflare:
 jwt:
   issuer: image-remove
   secret-key: ${JWT_SECRET_KEY}
+
+server:
+  forward-headers-strategy: framework
