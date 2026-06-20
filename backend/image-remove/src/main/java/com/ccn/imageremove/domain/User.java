@@ -22,14 +22,22 @@ public class User {
     @Column
     private String nickname;
 
+    @Column(name = "refresh_token", length = 500)
+    private String refreshToken;
+
     @Builder
-    public User(String email, String nickname) {
+    public User(String email, String nickname, String refreshToken) {
         this.email = email;
         this.nickname = nickname;
+        this.refreshToken = refreshToken;
     }
 
     public User update(String nickname) {
         this.nickname = nickname;
         return this;
+    }
+
+    public void updateRefreshToken(String refreshToken) {
+        this.refreshToken = refreshToken;
     }
 }

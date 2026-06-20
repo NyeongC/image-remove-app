@@ -1,7 +1,9 @@
 package com.ccn.imageremove.security;
 
 import com.ccn.imageremove.domain.User;
+import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Header;
+import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
@@ -19,6 +21,14 @@ public class JwtTokenProvider {
 
     private final JwtProperties jwtProperties;
 
+    public String generateAccessToken(User user) {
+        return generateToken(user, Duration.ofHours(2));
+    }
+
+    public String generateRefreshToken(User user) {
+        return generateToken(user, Duration.ofDays(14));
+    }
+
     public String generateToken(User user, Duration expiredAt) {
         Date now = new Date();
         Date expiry = new Date(now.getTime() + expiredAt.toMillis());
@@ -32,6 +42,32 @@ public class JwtTokenProvider {
                 .claim("id", user.getId())
                 .signWith(getSigningKey(), SignatureAlgorithm.HS256)
                 .compact();
+    }
+
+    public boolean validToken(String token) {
+        try {
+            Jwts.parserBuilder()
+                    .setSigningKey(getSigningKey())
+                    .build()
+                    .parseClaimsJws(token);
+
+            return true;
+        } catch (JwtException | IllegalArgumentException e) {
+            return false;
+        }
+    }
+
+    public String getEmail(String token) {
+        Claims claims = getClaims(token);
+        return claims.getSubject();
+    }
+
+    private Claims getClaims(String token) {
+        return Jwts.parserBuilder()
+                .setSigningKey(getSigningKey())
+                .build()
+                .parseClaimsJws(token)
+                .getBody();
     }
 
     private Key getSigningKey() {
