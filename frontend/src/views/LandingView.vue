@@ -8,15 +8,7 @@
           <span>Erasify</span>
         </div>
         <div class="nav-links">
-          <RouterLink to="/app" class="nav-link">기능</RouterLink>
-          <RouterLink to="/app/history" class="nav-link">갤러리</RouterLink>
           <a href="#pricing" class="nav-link">요금제</a>
-          <RouterLink to="/app/lb-test" class="nav-link nav-link-dev">
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-              <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
-            </svg>
-            LB 테스트
-          </RouterLink>
         </div>
         <div class="nav-actions">
           <RouterLink to="/login" class="btn-ghost">로그인</RouterLink>
@@ -54,7 +46,6 @@
               <path d="M5 12h14M12 5l7 7-7 7"/>
             </svg>
           </RouterLink>
-          <RouterLink to="/app" class="btn-secondary btn-lg">데모 보기</RouterLink>
         </div>
         <div class="hero-stats">
           <div class="stat">
@@ -254,16 +245,6 @@
       </div>
     </footer>
 
-    <!-- 개발용 빠른 이동 -->
-    <div class="dev-nav">
-      <span class="dev-nav-label">페이지 이동</span>
-      <RouterLink to="/">랜딩</RouterLink>
-      <RouterLink to="/login">로그인</RouterLink>
-      <RouterLink to="/app">배경제거</RouterLink>
-      <RouterLink to="/app/history">히스토리</RouterLink>
-      <RouterLink to="/app/settings">설정</RouterLink>
-      <RouterLink to="/app/lb-test">LB테스트</RouterLink>
-    </div>
   </div>
 </template>
 
@@ -340,19 +321,6 @@ import { RouterLink } from 'vue-router'
   background: var(--bg-card);
 }
 
-.nav-link-dev {
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
-  color: #22d3ee;
-  border: 1px solid rgba(6, 182, 212, 0.2);
-  background: rgba(6, 182, 212, 0.06);
-}
-
-.nav-link-dev:hover {
-  background: rgba(6, 182, 212, 0.12);
-  color: #67e8f9;
-}
 
 .nav-actions {
   display: flex;
@@ -896,46 +864,4 @@ import { RouterLink } from 'vue-router'
   color: var(--text-muted);
 }
 
-/* 개발용 네비게이션 */
-.dev-nav {
-  position: fixed;
-  bottom: 24px;
-  right: 24px;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  background: rgba(13, 13, 31, 0.95);
-  border: 1px solid rgba(124, 58, 237, 0.4);
-  border-radius: 100px;
-  padding: 8px 16px;
-  backdrop-filter: blur(20px);
-  box-shadow: var(--shadow-md);
-  z-index: 999;
-}
-
-.dev-nav-label {
-  font-size: 11px;
-  color: var(--text-muted);
-  font-weight: 600;
-  letter-spacing: 0.05em;
-  text-transform: uppercase;
-  padding-right: 4px;
-  border-right: 1px solid var(--border);
-  margin-right: 4px;
-}
-
-.dev-nav a {
-  font-size: 13px;
-  font-weight: 500;
-  color: var(--text-secondary);
-  padding: 4px 10px;
-  border-radius: 100px;
-  transition: all 0.2s;
-}
-
-.dev-nav a:hover,
-.dev-nav a.router-link-active {
-  color: white;
-  background: rgba(124, 58, 237, 0.3);
-}
 </style>
