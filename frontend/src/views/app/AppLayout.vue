@@ -149,17 +149,6 @@
       </main>
     </div>
 
-    <!-- 개발용 네비게이션 -->
-    <div class="dev-nav">
-      <span class="dev-nav-label">페이지 이동</span>
-      <RouterLink to="/">랜딩</RouterLink>
-      <RouterLink to="/login">로그인</RouterLink>
-      <RouterLink to="/app">배경제거</RouterLink>
-      <RouterLink to="/app/history">히스토리</RouterLink>
-      <RouterLink to="/app/settings">설정</RouterLink>
-      <RouterLink to="/app/lb-test">LB테스트</RouterLink>
-      <RouterLink to="/app/request-context-test">RC테스트</RouterLink>
-    </div>
   </div>
 </template>
 
@@ -537,46 +526,4 @@ const pageTitle = computed(() => {
   opacity: 0;
 }
 
-/* 개발용 네비게이션 */
-.dev-nav {
-  position: fixed;
-  bottom: 24px;
-  right: 24px;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  background: rgba(13, 13, 31, 0.95);
-  border: 1px solid rgba(124, 58, 237, 0.4);
-  border-radius: 100px;
-  padding: 8px 16px;
-  backdrop-filter: blur(20px);
-  box-shadow: var(--shadow-md);
-  z-index: 999;
-}
-
-.dev-nav-label {
-  font-size: 11px;
-  color: var(--text-muted);
-  font-weight: 600;
-  letter-spacing: 0.05em;
-  text-transform: uppercase;
-  padding-right: 4px;
-  border-right: 1px solid var(--border);
-  margin-right: 4px;
-}
-
-.dev-nav a {
-  font-size: 13px;
-  font-weight: 500;
-  color: var(--text-secondary);
-  padding: 4px 10px;
-  border-radius: 100px;
-  transition: all 0.2s;
-}
-
-.dev-nav a:hover,
-.dev-nav a.router-link-active {
-  color: white;
-  background: rgba(124, 58, 237, 0.3);
-}
 </style>
