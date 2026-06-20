@@ -39,9 +39,7 @@ public class SecurityConfig {
                                 "/api/auth/refresh"
                         ).permitAll()
 
-                        .requestMatchers(
-                                "/api/images/upload"
-                        ).authenticated()
+                        .requestMatchers("/api/**").authenticated()
 
                         .anyRequest().permitAll()
                 )
